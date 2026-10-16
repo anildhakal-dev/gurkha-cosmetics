@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en"></html>
+<head>
+    <title>Gurkha Cosmetics</title>
+</head>
+<body>
+    <h1>Welcome to Gurkha Cosmetics</h1>
+    <p>A place for all your cosmetic needs.</p>
+<h2>Book a Consultation</h2>
+<form method="post" action="/enquiry">
+    <label for="name">Name</label>
+    <input id="name" name="name" type="text" required>
+
+    <label for=""phone">Phone number</label>
+    <input id="phone" name="phone" type="tel" required>
+
+    <label for="treatment">Treatment</label>
+    <select id="treatment" name="treatment" required>
+        <option value="Facial">Facial</option>
+        <option value="Botox and Fillers">Botox and Fillers</option>
+        <option value="Skin rejuvenation">Skin rejuvenation</option>
+    </select>
+    <button type="submit">Send enquiry</button>
+</form>

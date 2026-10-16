@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html lang="en">
+<body>
+    <h1>Enquiries</h1>
+    <ul>
+        {% for row in rows %}
+        <li>{{ row[0] }} | {{row[1] }} | {{ row[2] }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
