@@ -1,11 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <head>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f7f7f7; }
+  table { border-collapse: collapse; width: 100%; background: white; }
+  th { background: #333; color: white; text-align: left; padding: 12px; }
+  td { padding: 12px; border-bottom: 1px solid #ddd; }
+  tr:hover td { background: #f0f0f0; }
+</style>
 <body>
     <h1>Enquiries</h1>
-    <ul>
-        {% for row in rows %}
-        <li>{{ row[0] }} | {{row[1] }} | {{ row[2] }}</li>
-        {% endfor %}
-    </ul>
+    
 </body>
 </html>
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Phone</th>
+        <th>Treatment</th>
+    </tr>
+    {% for row in rows %}
+    <tr>
+        <td>{{ row[0] }}</td>
+        <td>{{ row[1] }}</td>
+        <td>{{ row[2] }}</td>
+    </tr>
+    {% endfor %}
+</table>
