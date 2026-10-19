@@ -1,6 +1,7 @@
 import sqlite3
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, session, redirect 
 app = Flask(__name__)
+app.secret_key = "change-this-later"
 def setup_database():
     db = sqlite3.connect("clinic.db")
     db.execute("CREATE TABLE IF NOT EXISTS enquiries ( name TEXT, phone TEXT, treatment TEXT)")
@@ -33,9 +34,19 @@ def contact():
 
 @app.route("/enquiries")
 def enquiries():
+    if not session.get("logged_in"):
+        return redirect("/login")
     db = sqlite3.connect("clinic.db")
     rows = db.execute("SELECT name, phone, treatment FROM enquiries"). fetchall()
     db.close()
     return render_template("enquiries.html", rows=rows)    
-app.run(debug=True, port=5001)
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        if request.form["password"] == "clinic123":
+            session["logged_in"] = True
+            return redirect("/enquiries")
+        return "Wrong password"
+    return render_template("login.html")
+app.run(debug=True, port=5001) 
 
