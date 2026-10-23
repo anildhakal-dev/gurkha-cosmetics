@@ -1,10 +1,12 @@
 import sqlite3
+from datetime import datetime
 from flask import Flask, render_template, request, session, redirect 
 app = Flask(__name__)
 app.secret_key = "change-this-later"
 def setup_database():
     db = sqlite3.connect("clinic.db")
-    db.execute("CREATE TABLE IF NOT EXISTS enquiries ( name TEXT, phone TEXT, treatment TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS enquiries (name TEXT, phone TEXT, treatment TEXT, created TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS treatments (name TEXT, price TEXT)")
     db.commit()
     db.close()
 setup_database()
@@ -15,15 +17,19 @@ def home():
 
 @app.route("/treatments")
 def treatments():
-    return "Facials, Botox and fillers, Skin rejuvenation"    
+    db = sqlite3.connect("clinic.db")
+    rows = db.execute("SELECT name, price FROM treatments").fetchall()
+    db.close()
+    return render_template("treatments.html", rows=rows)    
 
 @app.route("/enquiry", methods=["POST"])
 def enquiry():
     name = request.form["name"]
     phone = request.form["phone"]
     treatment = request.form["treatment"]
+    created = datetime.now().strftime("%d %b %Y %H:%M")
     db = sqlite3.connect("clinic.db")
-    db.execute("INSERT INTO enquiries VALUES (?, ?, ?)", (name, phone, treatment))
+    db.execute("INSERT INTO enquiries VALUES (?, ?, ?, ?)", (name, phone, treatment, created))
     db.commit()
     db.close()
     return "Thanks " + name + ", we'll call you soon about " + treatment
@@ -37,7 +43,7 @@ def enquiries():
     if not session.get("logged_in"):
         return redirect("/login")
     db = sqlite3.connect("clinic.db")
-    rows = db.execute("SELECT name, phone, treatment FROM enquiries"). fetchall()
+    rows = db.execute("SELECT name, phone, treatment, created FROM enquiries ORDER BY rowid DESC").fetchall()
     db.close()
     return render_template("enquiries.html", rows=rows)    
 @app.route("/login", methods=["GET", "POST"])
@@ -48,5 +54,27 @@ def login():
             return redirect("/enquiries")
         return "Wrong password"
     return render_template("login.html")
+
+@app.route("/manage", methods=["GET", "POST"])
+def manage():
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    if request.method == "POST":
+        db.execute("INSERT INTO treatments VALUES (?, ?)", (request.form["name"], request.form["price"]))
+        db.commit()
+    treatments = db.execute("SELECT name, price FROM treatments").fetchall()
+    db.close()
+    return render_template("manage.html", treatments=treatments)
+
+@app.route("/stats")
+def stats():
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    total = db.execute("SELECT COUNT(*) FROM enquiries").fetchone()[0]
+    db.close()
+    return "Total enquriries: " + str(total)
+      
 app.run(debug=True, port=5001) 
 
