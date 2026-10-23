@@ -6,6 +6,7 @@ app.secret_key = "change-this-later"
 def setup_database():
     db = sqlite3.connect("clinic.db")
     db.execute("CREATE TABLE IF NOT EXISTS enquiries (name TEXT, phone TEXT, treatment TEXT, created TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS sales (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS treatments (name TEXT, price TEXT)")
     db.commit()
     db.close()
@@ -100,6 +101,20 @@ def update(id):
 def logout():
     session.clear()
     return redirect("/login")
+
+@app.route("/money", methods=["GET", "POST"])
+def money():
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    if request.method == "POST":
+        created = datetime.now().strftime("%d %b %Y")
+        db.execute("INSERT INTO sales VALUES (?, ?, ?)", (request.form["item"], float(request.form["amount"]), created))
+        db.commit()
+    sales = db.execute("SELECT item, amount, created FROM sales ORDER BY rowid DESC").fetchall()
+    total = db.execute("SELECT SUM(amount) FROM sales").fetchone()[0] or 0
+    db.close()
+    return render_template("money.html", sales=sales, total=total)
       
 app.run(debug=True, port=5001) 
 
