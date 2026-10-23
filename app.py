@@ -114,10 +114,10 @@ def money():
         db.commit()
     sales = db.execute("SELECT item, amount, created FROM sales ORDER BY rowid DESC").fetchall()
     total = db.execute("SELECT SUM(amount) FROM sales").fetchone()[0] or 0
-        costs = db.execute("SELECT item, amount, created FROM costs ORDER BY rowid DESC").fetchall()
+    costs = db.execute("SELECT item, amount, created FROM costs ORDER BY rowid DESC").fetchall()
     cost_total = db.execute("SELECT SUM(amount) FROM costs").fetchone()[0] or 0
     db.close()
-        return render_template("money.html", sales=sales, total=total, costs=costs, cost_total=cost_total)
+    return render_template("money.html", sales=sales, total=total, costs=costs, cost_total=cost_total)
       
 @app.route("/add-cost", methods=["POST"])
 def add_cost():
@@ -129,6 +129,5 @@ def add_cost():
     db.commit()
     db.close()
     return redirect("/money")
-
 app.run(debug=True, port=5001) 
 
