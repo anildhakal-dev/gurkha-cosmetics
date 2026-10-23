@@ -7,10 +7,12 @@
   th { background: #333; color: white; text-align: left; padding: 12px; }
   td { padding: 12px; border-bottom: 1px solid #ddd; }
   input, button { padding: 10px; margin-right: 8px; }
+  .delete { background: #c0392b; color: white; border: none; cursor: pointer; }
 </style>
 </head>
 <body>
   <h1>Manage treatments</h1>
+  <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/stats">Stats</a> | <a href="/logout">Log out</a></p>
   <form action="/manage" method="POST">
     <input name="name" placeholder="Treatment name" required>
     <input name="price" placeholder="Price e.g. £150" required>
@@ -20,13 +22,25 @@
     <tr>
       <th>Treatment</th>
       <th>Price</th>
+      <th></th>
     </tr>
     {% for t in treatments %}
     <tr>
-      <td>{{ t[0] }}</td>
       <td>{{ t[1] }}</td>
+      <td>
+        <form action="/update/{{ t[0] }}" method="POST">
+          <input name="price" value="{{ t[2] }}" required>
+          <button type="submit">Update</button>
+        </form>
+      </td>
+      <td>
+        <form action="/delete/{{ t[0] }}" method="POST">
+          <button class="delete" type="submit">Delete</button>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   </table>
 </body>
 </html>
+

@@ -63,7 +63,7 @@ def manage():
     if request.method == "POST":
         db.execute("INSERT INTO treatments VALUES (?, ?)", (request.form["name"], request.form["price"]))
         db.commit()
-    treatments = db.execute("SELECT name, price FROM treatments").fetchall()
+    treatments = db.execute("SELECT rowid, name, price FROM treatments").fetchall()
     db.close()
     return render_template("manage.html", treatments=treatments)
 
@@ -75,6 +75,31 @@ def stats():
     total = db.execute("SELECT COUNT(*) FROM enquiries").fetchone()[0]
     db.close()
     return "Total enquriries: " + str(total)
+
+@app.route("/delete/<int:id>", methods=["POST"])
+def delete(id):
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    db.execute("DELETE FROM treatments WHERE rowid = ?", (id,))
+    db.commit()
+    db.close()
+    return redirect("/manage")
+
+@app.route("/update/<int:id>", methods=["POST"])
+def update(id):
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    db.execute("UPDATE treatments SET price = ? WHERE rowid = ?", (request.form["price"], id))
+    db.commit()
+    db.close()
+    return redirect("/manage")    
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/login")
       
 app.run(debug=True, port=5001) 
 
