@@ -7,6 +7,7 @@ def setup_database():
     db = sqlite3.connect("clinic.db")
     db.execute("CREATE TABLE IF NOT EXISTS enquiries (name TEXT, phone TEXT, treatment TEXT, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS sales (item TEXT, amount REAL, created TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS costs (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS treatments (name TEXT, price TEXT)")
     db.commit()
     db.close()
@@ -113,8 +114,21 @@ def money():
         db.commit()
     sales = db.execute("SELECT item, amount, created FROM sales ORDER BY rowid DESC").fetchall()
     total = db.execute("SELECT SUM(amount) FROM sales").fetchone()[0] or 0
+        costs = db.execute("SELECT item, amount, created FROM costs ORDER BY rowid DESC").fetchall()
+    cost_total = db.execute("SELECT SUM(amount) FROM costs").fetchone()[0] or 0
     db.close()
-    return render_template("money.html", sales=sales, total=total)
+        return render_template("money.html", sales=sales, total=total, costs=costs, cost_total=cost_total)
       
+@app.route("/add-cost", methods=["POST"])
+def add_cost():
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    created = datetime.now().strftime("%d %b %Y")
+    db.execute("INSERT INTO costs VALUES (?, ?, ?)", (request.form["item"], float(request.form["amount"]), created))
+    db.commit()
+    db.close()
+    return redirect("/money")
+
 app.run(debug=True, port=5001) 
 
