@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<style>
+  body { font-family: Arial, sans-serif; padding: 30px; background: #f7f7f7; }
+  table { border-collapse: collapse; width: 100%; background: white; margin-top: 20px; }
+  th { background: #333; color: white; text-align: left; padding: 12px; }
+  td { padding: 12px; border-bottom: 1px solid #ddd; }
+  .total { font-size: 28px; font-weight: bold; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1>Stats</h1>
+  <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/logout">Log out</a></p>
+  <div class="total">Total enquiries: {{ total }}</div>
+  <h2>Where clients come from</h2>
+  <table>
+    <tr>
+      <th>Source</th>
+      <th>Enquiries</th>
+    </tr>
+    {% for s in sources %}
+    <tr>
+      <td>{{ s[0] }}</td>
+      <td>{{ s[1] }}</td>
+    </tr>
+    {% endfor %}
+  </table>
+</body>
+</html>

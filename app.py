@@ -5,7 +5,7 @@ app = Flask(__name__)
 app.secret_key = "change-this-later"
 def setup_database():
     db = sqlite3.connect("clinic.db")
-    db.execute("CREATE TABLE IF NOT EXISTS enquiries (name TEXT, phone TEXT, treatment TEXT, created TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS enquiries (name TEXT, phone TEXT, treatment TEXT, created TEXT, source TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS sales (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS costs (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS treatments (name TEXT, price TEXT)")
@@ -29,9 +29,10 @@ def enquiry():
     name = request.form["name"]
     phone = request.form["phone"]
     treatment = request.form["treatment"]
+    source = request.form["source"]
     created = datetime.now().strftime("%d %b %Y %H:%M")
     db = sqlite3.connect("clinic.db")
-    db.execute("INSERT INTO enquiries VALUES (?, ?, ?, ?)", (name, phone, treatment, created))
+    db.execute("INSERT INTO enquiries VALUES (?, ?, ?, ?, ?)", (name, phone, treatment, created, source))
     db.commit()
     db.close()
     return "Thanks " + name + ", we'll call you soon about " + treatment
@@ -75,8 +76,9 @@ def stats():
         return redirect("/login")
     db = sqlite3.connect("clinic.db")
     total = db.execute("SELECT COUNT(*) FROM enquiries").fetchone()[0]
+    sources = db.execute("SELECT source, COUNT(*) FROM enquiries GROUP BY source ORDER BY COUNT(*) DESC").fetchall()
     db.close()
-    return "Total enquriries: " + str(total)
+    return render_template("stats.html", total=total, sources=sources)
 
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete(id):
