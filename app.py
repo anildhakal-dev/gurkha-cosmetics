@@ -5,6 +5,7 @@ app = Flask(__name__)
 app.secret_key = "change-this-later"
 def setup_database():
     db = sqlite3.connect("clinic.db")
+    db.execute("CREATE TABLE IF NOT EXISTS settings (name TEXT PRIMARY KEY, value TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS enquiries (name TEXT, phone TEXT, treatment TEXT, created TEXT, source TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS sales (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS costs (item TEXT, amount REAL, created TEXT)")
@@ -15,7 +16,10 @@ setup_database()
 
 @app.route("/")
 def home():
-    return render_template("index.html")
+    db = sqlite3.connect("clinic.db")
+    info = dict(db.execute("SELECT name, value FROM settings").fetchall())
+    db.close()
+    return render_template("index.html", info=info)
 
 @app.route("/treatments")
 def treatments():
@@ -131,5 +135,19 @@ def add_cost():
     db.commit()
     db.close()
     return redirect("/money")
+
+@app.route("/settings", methods=["GET", "POST"])
+def settings():
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    if request.method == "POST":
+        db.execute("INSERT OR REPLACE INTO settings VALUES (?, ?)", ("hours", request.form["hours"]))
+        db.execute("INSERT OR REPLACE INTO settings VALUES (?, ?)", ("phone", request.form["phone"]))
+        db.commit()
+    info = dict(db.execute("SELECT name, value FROM settings").fetchall())
+    db.close()
+    return render_template("settings.html", info=info)
+
 app.run(debug=True, port=5001) 
 

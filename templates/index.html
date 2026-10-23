@@ -6,12 +6,14 @@
 <body>
     <h1>Welcome to Gurkha Cosmetics</h1>
     <p>A place for all your cosmetic needs.</p>
+    <p>Opening hours: {{ info.get("hours", "Coming soon") }}</p>
+<p>Call us: {{ info.get("phone", "") }}</p>
 <h2>Book a Consultation</h2>
 <form method="post" action="/enquiry">
     <label for="name">Name</label>
     <input id="name" name="name" type="text" required>
 
-    <label for=""phone">Phone number</label>
+    <label for="phone">Phone number</label>
     <input id="phone" name="phone" type="tel" required>
 
     <label for="treatment">Treatment</label>
