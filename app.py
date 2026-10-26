@@ -152,5 +152,6 @@ def settings():
     db.close()
     return render_template("settings.html", info=info)
 
-app.run(debug=True, port=5001) 
+if __name__ == "__main__":
+    app.run(debug=True, port=5001)
 
