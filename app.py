@@ -1,8 +1,10 @@
+import config
 import sqlite3
 from datetime import datetime
+from werkzeug.security import check_password_hash
 from flask import Flask, render_template, request, session, redirect 
 app = Flask(__name__)
-app.secret_key = "change-this-later"
+app.secret_key = config.SECRET_KEY
 def setup_database():
     db = sqlite3.connect("clinic.db")
     db.execute("CREATE TABLE IF NOT EXISTS settings (name TEXT PRIMARY KEY, value TEXT)")
@@ -57,7 +59,7 @@ def enquiries():
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        if request.form["password"] == "clinic123":
+        if check_password_hash(config.PASSWORD_HASH, request.form["password"]):
             session["logged_in"] = True
             return redirect("/enquiries")
         return "Wrong password"
