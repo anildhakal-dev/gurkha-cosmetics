@@ -11,7 +11,7 @@
 </head>
 <body>
   <h1>Stats</h1>
-  <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/logout">Log out</a></p>
+  <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/settings">Settings</a> | <a href="/logout">Log out</a></p>
   <div class="total">Total enquiries: {{ total }}</div>
   <h2>Where clients come from</h2>
   <table>
@@ -26,5 +26,17 @@
     </tr>
     {% endfor %}
   </table>
+  <div style="max-width: 400px; margin-top: 30px; background: white; padding: 20px;">
+    <canvas id="sourceChart"></canvas>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script>
+    const labels = [{% for s in sources %}{{ s[0]|tojson }},{% endfor %}];
+    const counts = [{% for s in sources %}{{ s[1] }},{% endfor %}];
+    new Chart(document.getElementById("sourceChart"), {
+      type: "pie",
+      data: { labels: labels, datasets: [{ data: counts }] }
+    });
+  </script>
 </body>
 </html>

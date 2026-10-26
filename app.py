@@ -18,8 +18,9 @@ setup_database()
 def home():
     db = sqlite3.connect("clinic.db")
     info = dict(db.execute("SELECT name, value FROM settings").fetchall())
+    treatments = db.execute("SELECT name, price FROM treatments").fetchall()
     db.close()
-    return render_template("index.html", info=info)
+    return render_template("index.html", info=info, treatments=treatments)
 
 @app.route("/treatments")
 def treatments():
