@@ -50,7 +50,7 @@ def enquiries():
     if not session.get("logged_in"):
         return redirect("/login")
     db = sqlite3.connect("clinic.db")
-    rows = db.execute("SELECT name, phone, treatment, created FROM enquiries ORDER BY rowid DESC").fetchall()
+    rows = db.execute("SELECT name, phone, treatment, created, source FROM enquiries ORDER BY rowid DESC").fetchall()
     db.close()
     return render_template("enquiries.html", rows=rows)    
 @app.route("/login", methods=["GET", "POST"])

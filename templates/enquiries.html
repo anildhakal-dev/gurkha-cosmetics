@@ -1,8 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <head>
-        <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/logout">Log out</a></p>
+<head>
 <style>
   body { font-family: Arial, sans-serif; padding: 30px; background: #f7f7f7; }
   table { border-collapse: collapse; width: 100%; background: white; }
@@ -10,22 +8,27 @@
   td { padding: 12px; border-bottom: 1px solid #ddd; }
   tr:hover td { background: #f0f0f0; }
 </style>
-<body>s
-    <h1>Enquiries</h1>
-    
-</body>
-</html>
-<table>
+</head>
+<body>
+  <h1>Enquiries</h1>
+  <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/settings">Settings</a> | <a href="/logout">Log out</a></p>
+  <table>
     <tr>
-        <th>Name</th>
-        <th>Phone</th>
-        <th>Treatment</th>
+      <th>Name</th>
+      <th>Phone</th>
+      <th>Treatment</th>
+      <th>Received</th>
+      <th>Source</th>
     </tr>
     {% for row in rows %}
     <tr>
-        <td>{{ row[0] }}</td>
-        <td>{{ row[1] }}</td>
-        <td>{{ row[2] }}</td>
+      <td>{{ row[0] }}</td>
+      <td>{{ row[1] }}</td>
+      <td>{{ row[2] }}</td>
+      <td>{{ row[3] }}</td>
+      <td>{{ row[4] }}</td>
     </tr>
     {% endfor %}
-</table>
+  </table>
+</body>
+</html>
