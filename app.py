@@ -1,10 +1,26 @@
 import config
 import sqlite3
+import smtplib
+from email.message import EmailMessage
 from datetime import datetime
 from werkzeug.security import check_password_hash
 from flask import Flask, render_template, request, session, redirect 
 app = Flask(__name__)
+
 app.secret_key = config.SECRET_KEY
+
+def send_email(to, subject, body):
+    msg = EmailMessage()
+    msg["From"] = config.EMAIL_ADDRESS
+    msg["To"] = to
+    msg["Subject"] = subject
+    msg.set_content(body)
+    try:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
+            smtp.login(config.EMAIL_ADDRESS, config.EMAIL_PASSWORD)
+            smtp.send_message(msg)
+    except Exception as e:
+        print("Email failed:", e)
 def setup_database():
     db = sqlite3.connect("clinic.db")
     db.execute("CREATE TABLE IF NOT EXISTS settings (name TEXT PRIMARY KEY, value TEXT)")
@@ -42,6 +58,14 @@ def enquiry():
     db.execute("INSERT INTO enquiries VALUES (?, ?, ?, ?, ?)", (name, phone, treatment, created, source))
     db.commit()
     db.close()
+    send_email(
+        config.OWNER_EMAIL,
+        "New enquiry from " + request.form["name"],
+        "Name: " + request.form["name"]
+        + "\nPhone: " + request.form["phone"]
+        + "\nTreatment: " + request.form["treatment"]
+        + "\nSource: " + request.form["source"],
+    )
     return "Thanks " + name + ", we'll call you soon about " + treatment
 
 @app.route("/contact")
