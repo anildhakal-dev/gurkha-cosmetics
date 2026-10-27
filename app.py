@@ -28,6 +28,10 @@ def setup_database():
     db.execute("CREATE TABLE IF NOT EXISTS sales (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS costs (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS treatments (name TEXT, price TEXT)")
+    try:
+        db.execute("ALTER TABLE enquiries ADD COLUMN email TEXT")
+    except sqlite3.OperationalError:
+        pass
     db.commit()
     db.close()
 setup_database()
@@ -53,9 +57,10 @@ def enquiry():
     phone = request.form["phone"]
     treatment = request.form["treatment"]
     source = request.form["source"]
+    email = request.form["email"]
     created = datetime.now().strftime("%d %b %Y %H:%M")
     db = sqlite3.connect("clinic.db")
-    db.execute("INSERT INTO enquiries VALUES (?, ?, ?, ?, ?)", (name, phone, treatment, created, source))
+    db.execute("INSERT INTO enquiries (name, phone, treatment, created, source, email) VALUES (?, ?, ?, ?, ?, ?)", (name, phone, treatment, created, source, email))
     db.commit()
     db.close()
     send_email(
@@ -65,6 +70,17 @@ def enquiry():
         + "\nPhone: " + request.form["phone"]
         + "\nTreatment: " + request.form["treatment"]
         + "\nSource: " + request.form["source"],
+                + "\nSource: " + request.form["source"]
+        + "\nEmail: " + email,
+    )
+    send_email(
+        email,
+        "Thanks for your enquiry, " + name,
+        "Hi " + name + ",\n\n"
+        + "Thanks for your enquiry about " + treatment + ". "
+        + "A member of our team will call you on " + phone + " shortly.\n\n"
+        + "Any questions, just reply to this email.\n\n"
+        + "Gurkha Cosmetics",
     )
     return "Thanks " + name + ", we'll call you soon about " + treatment
 
