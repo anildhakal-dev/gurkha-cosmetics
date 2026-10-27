@@ -69,8 +69,7 @@ def enquiry():
         "Name: " + request.form["name"]
         + "\nPhone: " + request.form["phone"]
         + "\nTreatment: " + request.form["treatment"]
-        + "\nSource: " + request.form["source"],
-                + "\nSource: " + request.form["source"]
+        + "\nSource: " + request.form["source"]
         + "\nEmail: " + email,
     )
     send_email(
@@ -82,7 +81,7 @@ def enquiry():
         + "Any questions, just reply to this email.\n\n"
         + "Gurkha Cosmetics",
     )
-    return "Thanks " + name + ", we'll call you soon about " + treatment
+    return "Thanks " + name + ", we'll call you soon about " + treatment 
 
 @app.route("/contact")
 def contact():
