@@ -7,26 +7,53 @@
   th { background: #333; color: white; text-align: left; padding: 12px; }
   td { padding: 12px; border-bottom: 1px solid #ddd; }
   tr:hover td { background: #f0f0f0; }
+  .summary { display: flex; gap: 15px; margin-bottom: 20px; }
+  .box { background: white; padding: 15px 25px; border-radius: 8px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+  .box strong { display: block; font-size: 28px; color: #2a9fc0; }
+  select { padding: 6px; border-radius: 6px; border: 1px solid #ccc; font-weight: bold; }
+  .new { background: #e3f2fd; }
+  .contacted { background: #fff8e1; }
+  .booked { background: #e8f5e9; }
+  .no-answer { background: #fdecea; }
 </style>
 </head>
 <body>
   <h1>Enquiries</h1>
   <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/settings">Settings</a> | <a href="/logout">Log out</a></p>
+
+  <div class="summary">
+    <div class="box">Enquiries <strong>{{ rows|length }}</strong></div>
+    <div class="box">Booked <strong>{{ booked }}</strong></div>
+    <div class="box">Booking rate <strong>{{ rate }}%</strong></div>
+  </div>
+
   <table>
     <tr>
       <th>Name</th>
       <th>Phone</th>
+      <th>Email</th>
       <th>Treatment</th>
       <th>Received</th>
       <th>Source</th>
+      <th>Status</th>
     </tr>
     {% for row in rows %}
     <tr>
       <td>{{ row[0] }}</td>
       <td>{{ row[1] }}</td>
+      <td>{{ row[5] or "" }}</td>
       <td>{{ row[2] }}</td>
       <td>{{ row[3] }}</td>
       <td>{{ row[4] }}</td>
+      <td>
+        <form method="post" action="/status/{{ row[7] }}">
+          <select name="status" class="{{ (row[6] or 'New')|lower|replace(' ', '-') }}" onchange="this.form.submit()">
+            {% for s in ["New", "Contacted", "Booked", "No answer"] %}
+            <option {% if s == row[6] %}selected{% endif %}>{{ s }}</option>
+            {% endfor %}
+          </select>
+        </form>
+      </td>
     </tr>
     {% endfor %}
   </table>
