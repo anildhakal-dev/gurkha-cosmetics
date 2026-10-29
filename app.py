@@ -32,6 +32,10 @@ def setup_database():
         db.execute("ALTER TABLE enquiries ADD COLUMN email TEXT")
     except sqlite3.OperationalError:
         pass
+        try:
+        db.execute("ALTER TABLE enquiries ADD COLUMN status TEXT DEFAULT 'New'")
+    except sqlite3.OperationalError:
+        pass    
     db.commit()
     db.close()
 setup_database()
@@ -92,9 +96,12 @@ def enquiries():
     if not session.get("logged_in"):
         return redirect("/login")
     db = sqlite3.connect("clinic.db")
-    rows = db.execute("SELECT name, phone, treatment, created, source FROM enquiries ORDER BY rowid DESC").fetchall()
+    rows = db.execute("SELECT name, phone, treatment, created, source, email, status, rowid FROM enquiries ORDER BY rowid DESC").fetchall()
     db.close()
-    return render_template("enquiries.html", rows=rows)    
+    booked = len([r for r in rows if r[6] == "Booked"])
+    rate = round(booked / len(rows) * 100) if rows else 0
+    return render_template("enquiries.html", rows=rows, booked=booked, rate=rate)
+      
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
