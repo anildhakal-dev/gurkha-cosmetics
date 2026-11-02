@@ -2,7 +2,7 @@ import config
 import sqlite3
 import smtplib
 from email.message import EmailMessage
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.security import check_password_hash
 from flask import Flask, render_template, request, session, redirect 
 app = Flask(__name__)
@@ -43,6 +43,38 @@ def setup_database():
     db.commit()
     db.close()
 setup_database()
+
+def run_followups(hours=24):
+    db = sqlite3.connect("clinic.db")
+    rows = db.execute(
+        "SELECT rowid, name, email, treatment, created FROM enquiries "
+        "WHERE status = 'New' AND followed_up = 0 AND email IS NOT NULL"
+    ).fetchall()
+    sent = 0
+    for rowid, name, email, treatment, created in rows:
+        received = datetime.strptime(created, "%d %b %Y %H:%M")
+        if datetime.now() - received >= timedelta(hours=hours):
+            send_email(
+                email,
+                "Still interested in " + treatment + "?",
+                "Hi " + name + ",\n\n"
+                + "We tried to reach you about your " + treatment + " enquiry. "
+                + "Just reply to this email with a good time to call, "
+                + "and we'll get you booked in.\n\n"
+                + "Gurkha Cosmetics",
+            )
+            db.execute("UPDATE enquiries SET followed_up = 1 WHERE rowid = ?", (rowid,))
+            sent += 1
+    db.commit()
+    db.close()
+    return sent
+
+@app.route("/run-followups")
+def followups():
+    if request.args.get("key") != config.CRON_KEY:
+        return "Not allowed", 403
+    sent = run_followups()
+    return "Follow-ups sent: " + str(sent)
 
 @app.route("/")
 def home():
