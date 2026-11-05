@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Free Skin Consultation | Gurkha Cosmetics</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, sans-serif; color: #222; background: #f4fafc; }
+  .hero { background: linear-gradient(135deg, #5bc0de, #2a9fc0); color: white; text-align: center; padding: 50px 20px 90px; }
+  .tag { display: inline-block; background: rgba(255,255,255,0.2); padding: 6px 14px; border-radius: 20px; font-size: 14px; }
+  .hero h1 { font-size: 34px; margin: 18px 0 10px; }
+  .hero p { font-size: 18px; max-width: 520px; margin: 0 auto; opacity: 0.95; }
+  .card { background: white; max-width: 440px; margin: -60px auto 30px; padding: 28px; border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.12); }
+  .card h2 { margin-top: 0; font-size: 22px; text-align: center; }
+  label { display: block; font-weight: bold; margin: 14px 0 6px; font-size: 14px; }
+  input { width: 100%; padding: 13px; border: 1px solid #ccc; border-radius: 8px; font-size: 16px; }
+  button { width: 100%; margin-top: 20px; padding: 16px; border: none; border-radius: 8px; background: #2a9fc0; color: white; font-size: 18px; font-weight: bold; cursor: pointer; }
+  button:hover { background: #1f87a5; }
+  .small { text-align: center; font-size: 13px; color: #777; margin-top: 12px; }
+  .benefits { max-width: 440px; margin: 0 auto 50px; padding: 0 20px; }
+  .benefits h3 { text-align: center; }
+  .benefit { background: white; padding: 14px 18px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 4px rgba(0,0,0,0.06); }
+  footer { text-align: center; font-size: 13px; color: #888; padding: 20px; }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <span class="tag">This month only</span>
+    <h1>Free Skin Consultation</h1>
+    <p>Find out which treatment is right for your skin. Friendly, expert advice with no pressure to book.</p>
+  </div>
+
+  <div class="card">
+    <h2>Claim your free consultation</h2>
+    <form method="post" action="/enquiry">
+      <label for="name">Your name</label>
+      <input id="name" name="name" required>
+
+      <label for="phone">Phone number</label>
+      <input id="phone" name="phone" type="tel" required>
+
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" required>
+
+      <input type="hidden" name="treatment" value="Free consultation">
+      <input type="hidden" name="source" value="{{ source }}">
+
+      <button type="submit">Book my free consultation</button>
+    </form>
+    <p class="small">We'll call you to find a time that suits you.</p>
+  </div>
+
+  <div class="benefits">
+    <h3>What you get</h3>
+    <div class="benefit">✔ A one-to-one chat about your skin goals</div>
+    <div class="benefit">✔ An honest recommendation, even if that's "you don't need anything"</div>
+    <div class="benefit">✔ Clear prices before you decide anything</div>
+  </div>
+
+  <footer>Gurkha Cosmetics</footer>
+
+</body>
+</html>

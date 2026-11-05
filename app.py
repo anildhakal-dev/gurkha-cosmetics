@@ -76,6 +76,11 @@ def followups():
     sent = run_followups()
     return "Follow-ups sent: " + str(sent)
 
+@app.route("/offer")
+def offer():
+    source = request.args.get("src", "Meta ad")
+    return render_template("offer.html", source=source)
+
 @app.route("/")
 def home():
     db = sqlite3.connect("clinic.db")
