@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thank you | Gurkha Cosmetics</title>
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: Arial, sans-serif; color: #222; background: #f4fafc;
+         min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+  .card { background: white; max-width: 440px; width: 100%; padding: 36px 28px; border-radius: 14px;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.12); text-align: center; }
+  .tick { width: 70px; height: 70px; margin: 0 auto 18px; border-radius: 50%; background: #2a9fc0;
+          color: white; font-size: 38px; line-height: 70px; }
+  h1 { font-size: 26px; margin: 0 0 12px; }
+  p { color: #555; line-height: 1.5; }
+  .steps { text-align: left; background: #f4fafc; padding: 16px 20px; border-radius: 10px; margin: 20px 0; }
+  .steps p { margin: 6px 0; color: #333; }
+  a.button { display: inline-block; margin-top: 10px; padding: 14px 26px; border-radius: 8px;
+             background: #2a9fc0; color: white; text-decoration: none; font-weight: bold; }
+  a.button:hover { background: #1f87a5; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="tick">✓</div>
+    <h1>Thanks, {{ name }}!</h1>
+    <p>We've received your enquiry about <strong>{{ treatment }}</strong>.</p>
+
+    <div class="steps">
+      <p><strong>What happens next</strong></p>
+      <p>1. Check your email for a confirmation.</p>
+      <p>2. One of our team will call you shortly.</p>
+      <p>3. We'll find a time that suits you.</p>
+    </div>
+
+    <a class="button" href="/">Back to our website</a>
+  </div>
+</body>
+</html>

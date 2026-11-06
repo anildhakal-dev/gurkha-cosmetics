@@ -126,7 +126,7 @@ def enquiry():
         + "Any questions, just reply to this email.\n\n"
         + "Gurkha Cosmetics",
     )
-    return "Thanks " + name + ", we'll call you soon about " + treatment 
+    return render_template("thanks.html", name=name, treatment=treatment)
 
 @app.route("/contact")
 def contact():
