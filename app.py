@@ -28,6 +28,7 @@ def setup_database():
     db.execute("CREATE TABLE IF NOT EXISTS sales (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS costs (item TEXT, amount REAL, created TEXT)")
     db.execute("CREATE TABLE IF NOT EXISTS treatments (name TEXT, price TEXT)")
+    db.execute("CREATE TABLE IF NOT EXISTS ad_spend (source TEXT, amount REAL, created TEXT)")
     try:
         db.execute("ALTER TABLE enquiries ADD COLUMN email TEXT")
     except sqlite3.OperationalError:
@@ -179,9 +180,26 @@ def stats():
         return redirect("/login")
     db = sqlite3.connect("clinic.db")
     total = db.execute("SELECT COUNT(*) FROM enquiries").fetchone()[0]
-    sources = db.execute("SELECT source, COUNT(*) FROM enquiries GROUP BY source ORDER BY COUNT(*) DESC").fetchall()
+    sources = db.execute("SELECT source, COUNT(*), SUM(status = 'Booked') FROM enquiries GROUP BY source ORDER BY COUNT(*) DESC").fetchall()
+    spend = dict(db.execute("SELECT source, SUM(amount) FROM ad_spend GROUP BY source").fetchall())
     db.close()
-    return render_template("stats.html", total=total, sources=sources)
+    rows = []
+    for source, leads, booked in sources:
+        spent = spend.get(source, 0)
+        cost_per_lead = spent / leads if spent else None
+        cost_per_booking = spent / booked if spent and booked else None
+        rows.append((source, leads, booked, spent, cost_per_lead, cost_per_booking))
+    return render_template("stats.html", total=total, rows=rows)
+
+@app.route("/add-spend", methods=["POST"])
+def add_spend():
+    if not session.get("logged_in"):
+        return redirect("/login")
+    db = sqlite3.connect("clinic.db")
+    db.execute("INSERT INTO ad_spend VALUES (?, ?, ?)", (request.form["source"], float(request.form["amount"]), datetime.now().strftime("%d %b %Y %H:%M")))
+    db.commit()
+    db.close()
+    return redirect("/stats")
 
 @app.route("/delete/<int:id>", methods=["POST"])
 def delete(id):

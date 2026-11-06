@@ -7,32 +7,59 @@
   th { background: #333; color: white; text-align: left; padding: 12px; }
   td { padding: 12px; border-bottom: 1px solid #ddd; }
   .total { font-size: 28px; font-weight: bold; margin-top: 10px; }
+  .money { font-weight: bold; color: #2a9fc0; }
+  .spend-form { background: white; padding: 20px; margin-top: 25px; border-radius: 8px; max-width: 500px; }
+  .spend-form select, .spend-form input { padding: 10px; border: 1px solid #ccc; border-radius: 6px; margin-right: 8px; }
+  .spend-form button { padding: 10px 18px; border: none; border-radius: 6px; background: #2a9fc0; color: white; font-weight: bold; cursor: pointer; }
 </style>
 </head>
 <body>
   <h1>Stats</h1>
   <p><a href="/enquiries">Enquiries</a> | <a href="/manage">Treatments</a> | <a href="/money">Money</a> | <a href="/stats">Stats</a> | <a href="/settings">Settings</a> | <a href="/logout">Log out</a></p>
   <div class="total">Total enquiries: {{ total }}</div>
+
   <h2>Where clients come from</h2>
   <table>
     <tr>
       <th>Source</th>
-      <th>Enquiries</th>
+      <th>Leads</th>
+      <th>Booked</th>
+      <th>Ad spend</th>
+      <th>Cost per lead</th>
+      <th>Cost per booking</th>
     </tr>
-    {% for s in sources %}
+    {% for r in rows %}
     <tr>
-      <td>{{ s[0] }}</td>
-      <td>{{ s[1] }}</td>
+      <td>{{ r[0] }}</td>
+      <td>{{ r[1] }}</td>
+      <td>{{ r[2] }}</td>
+      <td>{% if r[3] %}£{{ "%.2f"|format(r[3]) }}{% else %}–{% endif %}</td>
+      <td class="money">{% if r[4] %}£{{ "%.2f"|format(r[4]) }}{% else %}–{% endif %}</td>
+      <td class="money">{% if r[5] %}£{{ "%.2f"|format(r[5]) }}{% else %}–{% endif %}</td>
     </tr>
     {% endfor %}
   </table>
+
+  <div class="spend-form">
+    <h3>Add ad spend</h3>
+    <form method="post" action="/add-spend">
+      <select name="source">
+        {% for r in rows %}
+        <option>{{ r[0] }}</option>
+        {% endfor %}
+      </select>
+      <input name="amount" type="number" step="0.01" min="0" placeholder="£ spent" required>
+      <button type="submit">Add</button>
+    </form>
+  </div>
+
   <div style="max-width: 400px; margin-top: 30px; background: white; padding: 20px;">
     <canvas id="sourceChart"></canvas>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script>
-    const labels = [{% for s in sources %}{{ s[0]|tojson }},{% endfor %}];
-    const counts = [{% for s in sources %}{{ s[1] }},{% endfor %}];
+    const labels = [{% for r in rows %}{{ r[0]|tojson }},{% endfor %}];
+    const counts = [{% for r in rows %}{{ r[1] }},{% endfor %}];
     new Chart(document.getElementById("sourceChart"), {
       type: "pie",
       data: { labels: labels, datasets: [{ data: counts }] }
